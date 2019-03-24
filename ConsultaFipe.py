@@ -1,31 +1,45 @@
 # -*- coding: utf-8 -*-
 
 import json, requests
-from .TesteClasseSwitch import Teste
+from TesteClasseSwitch import Teste
 
 class Consulta(object):
-
-    def __init__(self, option):
-        self.option = option
-
     url = 'http://fipeapi.appspot.com/api/1/'
-
-    print("Escolha uma opção: C Ta Ligado")
-    opt = int(input())
-
     
-    tipo = Teste(opt)
-        
-    print(tipo.switch_teste())
+    def __init__(self):
+        self.tipo = ''
+        self.marcas = []
+  
+    def escolheTipo(self, url):        
+        print("Escolha uma opção: ")
+        print("\t 1 - Carro \n\t 2 - Moto \n\t 3 - Caminhão")
+        opt = int(input())
 
-    """ response = requests.get(url+tipo)
+        # Chamando Classe de Teste, fazendo switch case
+        choice = Teste(opt)            
+        self.tipo = choice.switchTipo(opt)
 
-    marcas = json.loads(response.content)
+        # Fazendo a requisição GET na API da tabela FIPE e 
+        #transformando em objeto python com a lib json
+        self.url = self.url + self.tipo
+        response = requests.get(self.url + "/marcas.json")
 
-    for i in range(len(marcas)):
-        print(marcas[i]['name']) """
+        self.marcas = json.loads(response.content)
 
+        return self.marcas
+
+    def escolheMarca(self, marcas):
+        print("Escolha uma marca: \n") 
+
+        count = 1
     
-if __name__ == "__main__":
+        print('{:-^127}'.format("-"))
+        for marca in self.marcas:
+            print('{:<}{:^11}'.format('|', marca['name']), end="")
+            
+            if count == 10:
+                print("\n")
+                count = 0
+            count += 1
 
-    
+
