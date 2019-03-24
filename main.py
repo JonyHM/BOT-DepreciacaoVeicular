@@ -10,10 +10,8 @@ class Principal(object):
         self.marcas = self.consulta.marcas
 
     def start(self):                
-        tipos = self.consulta.escolheTipo(self.url)
 
-        for tipo in tipos:
-            print(tipo['name'])
+        self.consulta.escolheTipo(self.url)
 
         self.consulta.escolheMarca(self.marcas)
         
