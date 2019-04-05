@@ -11,7 +11,6 @@ class Consulta(object):
         self.tipo = ''
         self.marcas = []
         self.modelos = []
-        self.retornoModelo = []
         self.dicio = {}
         self.modelo = []
         self.listaModelos = []
@@ -62,15 +61,14 @@ class Consulta(object):
 
         for modelo in self.modelos:
             if opt.upper() in modelo['name'].upper():
-                self.retornoModelo.append(modelo['name']) #desnecessário
                 self.listaModelos.append(modelo)
 
         # Imprime os modelos com o nome informado, cada um com índice.
         #Depois atrela esse índice com a marca em um dicionario
         i = 1
-        for nome in self.retornoModelo:
-            print(str(i) + " - " + nome)
-            self.dicio[i] = nome
+        for nome in self.listaModelos:
+            print(str(i) + " - " + nome['name'])
+            self.dicio[i] = nome['name']
             i+=1
 
     def ecolheModeloNaLista(self):
@@ -110,4 +108,3 @@ class Consulta(object):
         self.ano = json.loads(response.content)
 
         print('Valor atual do veículo: ' + self.ano['preco'])
-    #pedir ano/combustível do carro e ver no que dá

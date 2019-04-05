@@ -18,3 +18,7 @@ class Main(object):
 if __name__ == "__main__":
     main = Main()
     main.start()
+
+## TODO: tratamento de erros de input de usuários
+## 
+# 
