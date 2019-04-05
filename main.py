@@ -19,6 +19,8 @@ if __name__ == "__main__":
     main = Main()
     main.start()
 
-## TODO: tratamento de erros de input de usuários
-## 
-# 
+## TODO: 
+# tratamento de erros de input de usuários
+# separar classes para input
+# Classe para montar url
+# Melhorar workflow de chamadas de classes.

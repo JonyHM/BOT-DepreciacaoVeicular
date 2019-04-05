@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # importando a biblioteca do bot
 import telepot
 

@@ -95,7 +95,7 @@ class Consulta(object):
             i+=1
 
     def escolheAno(self):
-        print("Escolha qual o Ano e Combustível de seu veículo: ")
+        print("Escolha qual o Ano/Combustível de seu veículo: ")
         opt = int(input())
         print('\n')
 
