@@ -21,6 +21,6 @@ if __name__ == "__main__":
 
 ## TODO: 
 
-# separar classes para input
 # Classe para montar url
+# separar classes para input
 # Melhorar workflow de chamadas de classes.
