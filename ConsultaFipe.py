@@ -4,20 +4,21 @@
 import json, requests
 from TesteClasseSwitch import Teste
 
-class Consulta(object):
-    url = 'http://fipeapi.appspot.com/api/1/'
+class Consulta(object):    
     
     def __init__(self):
+        self.url = 'http://fipeapi.appspot.com/api/1/'
         self.tipo = ''
-        self.marcas = []
+        self.marcas = [] ###
         self.modelos = []
         self.dicio = {}
         self.modelo = []
         self.listaModelos = []
-        self.id = 0
+        self.id = 0 ##gambiarra
         self.ano = []
   
-    def escolheTipo(self):        
+    def escolheTipo(self):   
+
         print("Escolha uma opção: ")
         print("\t 1 - Carro \n\t 2 - Moto \n\t 3 - Caminhão") ## Podem ser botões no telegram
         opt = int(input())
@@ -27,14 +28,14 @@ class Consulta(object):
         escolha = Teste(opt)            
         self.tipo = escolha.switchTipo(opt)
 
-        # Fazendo a requisição GET na API da tabela FIPE e 
-        #transformando em objeto python com a lib json
+        # Fazendo a requisição GET na API da tabela FIPE e transformando em objeto python com a lib json
         self.url = self.url + self.tipo
         response = requests.get(self.url + "/marcas.json")
 
         self.marcas = json.loads(response.content)
 
     def escolheMarca(self):
+
         print("Digite a marca do seu veículo: ")
         marca = input()
         print('\n')
@@ -42,11 +43,11 @@ class Consulta(object):
         for nome in self.marcas:
             if marca.upper() == nome['name']:
                 id = nome['id']
-                url = self.url + "/veiculos/" + str(id)
+                self.url = self.url + "/veiculos/" + str(id)
                 self.id = str(id)
                 break
 
-        response = requests.get(url + ".json")
+        response = requests.get(self.url + ".json")
 
         try:
             self.modelos = json.loads(response.content)
@@ -55,6 +56,7 @@ class Consulta(object):
             self.escolheMarca()
 
     def escolheModelo(self):
+
         print("Digite o modelo do seu veículo: ")
         opt = input()
         print('\n')
@@ -63,15 +65,19 @@ class Consulta(object):
             if opt.upper() in modelo['name'].upper():
                 self.listaModelos.append(modelo)
 
-        # Imprime os modelos com o nome informado, cada um com índice.
-        #Depois atrela esse índice com a marca em um dicionario
-        i = 1
-        for nome in self.listaModelos:
-            print(str(i) + " - " + nome['name'])
-            self.dicio[i] = nome['name']
-            i+=1
+        # Imprime os modelos com o nome informado, cada um com índice. Depois atrela esse índice com a marca em um dicionario
+        if self.listaModelos:
+            i = 1
+            for nome in self.listaModelos:
+                print(str(i) + " - " + nome['name'])
+                self.dicio[i] = nome['name']
+                i+=1
+        else:
+            print("Modelo não reconhecido!\nPor favor, digite novamente\n\n")
+            self.escolheModelo()
 
-    def ecolheModeloNaLista(self):
+    def escolheModeloNaLista(self):
+
         print("Escolha o número correspondente ao seu veículo: ")
         opt = int(input())
         print('\n')
@@ -83,6 +89,9 @@ class Consulta(object):
                 if modelo.upper() == nome['name'].upper():
                     id = nome['id']
                     self.url = self.url + "/veiculo/" + self.id + "/" + str(id)
+        else:
+            print("Opção inválida!\nPor favor, tente novamente\n\n")
+            self.escolheModeloNaLista()
 
         response = requests.get(self.url + ".json") #Da pra criar classe pra isso
         self.modelo = json.loads(response.content) 
@@ -95,6 +104,7 @@ class Consulta(object):
             i+=1
 
     def escolheAno(self):
+
         print("Escolha qual o Ano/Combustível de seu veículo: ")
         opt = int(input())
         print('\n')
@@ -103,8 +113,13 @@ class Consulta(object):
             modelo = self.dicio[opt]
             id = modelo['id']        
             self.url = self.url + "/" + str(id)
-        
-        response = requests.get(self.url + ".json")
-        self.ano = json.loads(response.content)
 
-        print('Valor atual do veículo: ' + self.ano['preco'])
+            response = requests.get(self.url + ".json")
+            self.ano = json.loads(response.content)
+
+            print('Valor atual do veículo: ' + self.ano['preco'])
+        else:
+            print("Opção inválida!\nPor favor, tente novamente\n\n")
+            self.escolheAno()
+        
+       
