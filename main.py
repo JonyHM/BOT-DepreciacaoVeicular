@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ConsultaFipe import *
-from TesteClasseSwitch import *
+from ConsultaFipe import Consulta
 
 class Main(object):       
     def __init__(self):

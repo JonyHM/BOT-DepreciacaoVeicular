@@ -3,18 +3,20 @@
 
 import json, requests
 from TesteClasseSwitch import Teste
+from MontaUrl import MontaUrl
 
 class Consulta(object):    
     
     def __init__(self):
-        self.url = 'http://fipeapi.appspot.com/api/1/'
+        self.montaUrl = MontaUrl()
+        self.url = self.montaUrl.getUrl()
         self.tipo = ''
         self.marcas = [] ###
         self.modelos = []
         self.dicio = {}
         self.modelo = []
         self.listaModelos = []
-        self.id = 0 ##gambiarra
+        self.id = 0 ##gambiarra - MontaUrl vai resolver isso
         self.ano = []
   
     def escolheTipo(self):   
@@ -29,7 +31,7 @@ class Consulta(object):
         self.tipo = escolha.switchTipo(opt)
 
         # Fazendo a requisição GET na API da tabela FIPE e transformando em objeto python com a lib json
-        self.url = self.url + self.tipo
+        self.url = montaUrl.montar(self.tipo)
         response = requests.get(self.url + "/marcas.json")
 
         self.marcas = json.loads(response.content)
