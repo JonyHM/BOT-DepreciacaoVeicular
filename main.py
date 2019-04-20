@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from ConsultaFipe import Consulta
+from ConsultaFipe import ConsultaFipe
 
 class Main(object):       
     def __init__(self):
-        self.consulta = Consulta()
+        self.consulta = ConsultaFipe()
 
     def start(self):                
 
@@ -23,3 +23,4 @@ if __name__ == "__main__":
 # Classe para montar url
 # separar classes para input
 # Melhorar workflow de chamadas de classes.
+# Bot telegram api

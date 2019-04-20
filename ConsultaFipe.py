@@ -2,12 +2,13 @@
 #controller
 
 import json, requests
-from TesteClasseSwitch import Teste
+from Escolhas import Escolhas
 from MontaUrl import MontaUrl
 
-class Consulta(object):    
+class ConsultaFipe(object):    
     
     def __init__(self):
+        self.escolha = Escolhas()           
         self.montaUrl = MontaUrl()
         self.url = self.montaUrl.getUrl()
         self.tipo = ''
@@ -26,12 +27,10 @@ class Consulta(object):
         opt = int(input())
         print('\n')
 
-        # Chamando Classe de Teste, fazendo switch case
-        escolha = Teste(opt)            
-        self.tipo = escolha.switchTipo(opt)
+        self.tipo = self.escolha.switchTipo(opt)
 
         # Fazendo a requisição GET na API da tabela FIPE e transformando em objeto python com a lib json
-        self.url = montaUrl.montar(self.tipo)
+        self.url = self.montaUrl.montar(self.tipo)
         response = requests.get(self.url + "/marcas.json")
 
         self.marcas = json.loads(response.content)

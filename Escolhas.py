@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Esta classe será destinada aos inputs do usuário
-class Teste(object):    
-    def __init__(self, option):
-        self.option = option
+class Escolhas(object):   
 
     def switchTipo(self, option):
          switcher = {
