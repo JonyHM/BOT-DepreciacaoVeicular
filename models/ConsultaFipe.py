@@ -2,9 +2,12 @@
 #controller
 
 import json, requests
-from Escolhas import Escolhas
+from controllers.Escolhas import Escolhas
 from MontaUrl import MontaUrl
 
+
+
+### Vai apenas interagir com a API da tabela FIPE
 class ConsultaFipe(object):    
     
     def __init__(self):

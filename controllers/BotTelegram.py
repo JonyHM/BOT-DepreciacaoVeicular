@@ -28,7 +28,7 @@ def hello(bot, update):
    update.message.reply_text('Escolha um tipo de veículo:', reply_markup=marcacao)
 
 def error(update, context):
-   logger.warning('Update "%s" caused error "%s"', update, context.error)
+   logger.warning('A atualização "%s" Causou o erro "%s"', update, context.error)
 
 
 def main():
