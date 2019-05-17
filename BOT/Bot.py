@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+## BOT Exemplo no telepot - Será extinto
+
 # importando a biblioteca do bot
 import telepot
 

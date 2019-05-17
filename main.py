@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from models.ConsultaFipe import ConsultaFipe
+from ConsultaFipe import ConsultaFipe
 
 class Main(object):       
     def __init__(self):
@@ -20,7 +20,6 @@ if __name__ == "__main__":
 
 ## TODO: 
 
-# Classe para montar url -> Terminar
 # separar classes para input -> modelar
 # Melhorar workflow de chamadas de classes. -> MVC
 # Bot telegram api -> Continuar
