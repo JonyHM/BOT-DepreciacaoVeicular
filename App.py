@@ -1,10 +1,12 @@
 import logging
 import json, requests
+import locale
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+locale.setlocale(locale.LC_ALL, '')
 
 TOKEN = "892737322:AAGYB5X5cJnFyLbjsBSQ8lw4t1tYAPvR2t4"
 BASE_URL = "http://fipeapi.appspot.com/api/1"
@@ -17,17 +19,15 @@ global marca
 global marcas
 global modelo
 global modelos
-global modelos_dict
-global ano_combustivel
-global c
+global modelo_id
+global veiculo_id
 
 marca = None
 marcas = None
 modelo = None
 modelos = None
-modelos_dict = None
-ano_combustivel = None
-c = 0
+modelo_id = None
+veiculo_id = None
 
 def test(bot, update, args):
     chat_id = update.message.chat.id
@@ -65,9 +65,8 @@ def t2(bot, update, args):
     global marcas
     global modelo
     global modelos
-    global modelos_dict
-    global ano_combustivel
-    global c
+    global modelo_id
+    global veiculo_id
 
     print("ARGS: ", args)
 
@@ -116,43 +115,58 @@ def t2(bot, update, args):
 
             bot.sendMessage(chat_id=chat_id, text="Escolha o id de seu veículo")
         else:
-            modelo_id = args[0]
+            if not modelo:
+                modelo_id = args[0]
 
-            print(modelos[:3])
+                URL = ""
+                found = False
 
-            URL = ""
-            found = False
-
-            for m in modelos:
-                if modelo_id == m['id']:
-                    URL = "{}/carros/veiculo/{}/{}.json".format(BASE_URL, m['id'], modelo_id)
-                    found = True
-                    break
-            
-            response = requests.get(URL)
-
-            modelo = json.loads(response.content)
-
-            if not found:
-                bot.sendMessage(chat_id=chat_id, text="Não achei este veículo :(")
-            else:
-                bot.sendMessage(chat_id=chat_id, text="{}".format(json.dumps(modelo)))
-                bot.sendMessage(chat_id=chat_id, text="CABO MAN")
+                for m in modelos:
+                    if modelo_id == m['id']:
+                        URL = "{}/carros/veiculo/21/{}.json".format(BASE_URL, modelo_id)
+                        found = True
+                        break
                 
+                print("URL", URL)
 
-    ############################################
-    
-    #if not ano_combustivel:
-    #    bot.sendMessage(chat_id=chat_id, text="Insira o ano/combustível de seu veículo")
-    #else:
-    #    ano_combustivel = args[0]
-    #    print
+                bot.sendMessage(chat_id=chat_id,text="Recuperando dados do modelo...")
+                response = json.loads(requests.get(URL).content)
 
+                if 'error' in response:
+                    bot.sendMessage(chat_id=chat_id, text="Ocorreu um erro nesta operação")
+                    bot.sendMessage(chat_id=chat_id, text="{}".format(json.dumps(response)))
+                else:
+                    modelo = response
+
+                    if len(modelo) > 1 and type(modelo) == list:
+                        bot.sendMessage(chat_id=chat_id, text="Encontrei mais de um modelo com esse nome")
+                        
+                        for m in response:
+                            bot.sendMessage(chat_id=chat_id, text="ID: {} - {} {}".format(m['fipe_codigo'], m['veiculo'], m['name']))
+                        
+                        bot.sendMessage(chat_id=chat_id, text="Qual é o seu?")
+            else:
+                veiculo_id = args[0]
+
+                URL = "{}/carros/veiculo/21/{}/{}.json".format(BASE_URL, modelo_id, veiculo_id)
+
+                print(URL)
+
+                modelo = json.loads(requests.get(URL).content)
+
+                if 'error' in modelo:
+                    bot.sendMessage(chat_id=chat_id, text="Não achei este veículo :(")
+                else:
+                    bot.sendMessage(chat_id=chat_id, text="{}".format(json.dumps(modelo)))
+                    bot.sendMessage(chat_id=chat_id, text="CABO MAN")
+
+                    print(int(modelo.get('preco')[2:]))
+                    
 def help(self, updater):
     pass
 
 dispatcher.add_handler(CommandHandler('t', test, pass_args=True))
-dispatcher.add_handler(CommandHandler('t2', t2, pass_args=True))
+dispatcher.add_handler(CommandHandler('c', t2, pass_args=True))
 
 dispatcher.add_handler(CallbackQueryHandler(test))
 
