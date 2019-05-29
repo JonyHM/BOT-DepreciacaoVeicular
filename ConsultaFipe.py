@@ -1,10 +1,11 @@
+#!/usr/bin/env python3.7
 # encoding: utf-8
 
 import json, requests
 from Escolhas import Escolhas
 from MontaUrl import MontaUrl
 
-
+## Modelo de fluxo para ser implementaqdo no Bot
 
 ### Vai apenas interagir com a API da tabela FIPE
 class ConsultaFipe(object):    
@@ -15,53 +16,41 @@ class ConsultaFipe(object):
         self.nomeVeiculo = ''
         self.valorVeiculo = ''
         self.anoVeiculo = 0
+        self.opt = ''
 
-        self.marcas = [] ### Separar coleções em outra classe?
+        self.marcas = [] 
         self.modelos = []
         self.modelo = []
         self.listaModelos = []
         self.dicio = {}
         self.ano = []
         
-    def escolheTipo(self):  
-        print(u'\nEscolha uma opção: ')
-        print(u'\n\t\t1 - Carro \n\
-                2 - Moto \n\
-                3 - Caminhão\n\
-                0 - SAIR') ## Podem ser botões no telegram
-        print('\n')
-
-        opt = self.escolha.switchTipo(int(input()))
-
+    def escolheTipo(self, opt):  
+       
         if opt == 'invalido':
             print(u'\nOpção inválida!\n\
                 Por favor, tente novamente\n')
-            self.escolheTipo()
+            self.escolheTipo(opt)
         elif opt == 'SAIR':
             print(u'\nSaindo...\n')
             exit(0)
         else:
-            tipo = opt
+            self.opt = opt
 
         # Fazendo a requisição GET na API da tabela FIPE e transformando em objeto python com a lib json
-        url = self.montaUrl.montar(arg='/marcas', tipoVeiculo=tipo)
+        url = self.montaUrl.montar(arg='/marcas', tipoVeiculo=self.opt)
 
         if not self.marcas:
             self.marcas = self.pegaDados(url)
 
         return True
 
-    def escolheMarca(self):
-        ok = False
+    def escolheMarca(self, marca):
 
-        print(u'\nDigite a marca do seu veículo (r para retornar): ')
-        marca = raw_input()
-        print('\n')
-
-        if marca.upper() == 'R':
-            ok = self.escolheTipo()
-            if ok:
-                self.escolheMarca()
+        # if marca.upper() == 'R':
+        #     ok = self.escolheTipo(self.opt)
+        #     if ok:
+        #         self.escolheMarca(marca)
 
         for nome in self.marcas:
             if marca.upper() == nome['name'].upper():
@@ -72,58 +61,55 @@ class ConsultaFipe(object):
             self.modelos = []
             try:
                 self.modelos = self.pegaDados(url)
-            except:
+            except: #retirar a mensagem e chamar o metodo denovo no bot
                 print(u'\nMarca não reconhecida!\n\
                     Por favor, digite novamente\n\n')
-                self.escolheMarca()
+                # self.escolheMarca(marca)
 
         return True
 
-    def escolheModelo(self):
-        ok = False
+    def escolheModelo(self, mod):
 
-        print(u'Digite o modelo do seu veículo (r para retornar): ')
-        opt = raw_input()
-        print('\n')
-
-        if opt.upper() == 'R':
-            ok = self.escolheMarca()
-            if ok:
-                self.escolheModelo()
+        # if modelo.upper() == 'R':
+        #     ok = self.escolheMarca()
+        #     if ok:
+        #         self.escolheModelo()
 
         # Percorre a lista de modelos e verifica se o input do usuário é igual ao nome do modelo, ambos em upper case e o 
         #adiciona na lista de modelos para exibição futuramente
         for modelo in self.modelos:
-            if opt.upper() in modelo['name'].upper() and modelo not in self.listaModelos:
+            if mod.upper() in modelo['name'].upper() and modelo not in self.listaModelos:
                 self.listaModelos.append(modelo)
 
-        return True
+        return self.listaModelos
 
-    def escolheModeloNaLista(self):
-        ok = False
+    def escolheModeloNaLista(self, opt, dicio):
+        # ok = False
 
         # Imprime os modelos com o nome informado, cada um com índice. Depois atrela esse índice com a marca em um dicionario
-        if self.listaModelos:
-            i = 1
-            for nome in self.listaModelos:
-                print(str(i) + " - " + nome['name'])
-                self.dicio[i] = nome['name']
-                i+=1
-        else:
-            print(u'Modelo não reconhecido!\n\
-                Por favor, digite novamente\n\n')
-            self.listaModelos = []
-            self.escolheModelo()
+        # if self.listaModelos:
+        #     i = 1
+        #     for nome in self.listaModelos:
+        #         print(str(i) + " - " + nome['name'])
+        #         self.dicio[i] = nome['name']
+        #         i+=1
+        # else:
+        #     print(u'Modelo não reconhecido!\n\
+        #         Por favor, digite novamente\n\n')
+        #     self.listaModelos = []
+        #     self.escolheModelo()
 
-        print(u'\nEscolha o número correspondente ao seu veículo (0 para retornar): ') ## Dar um exemplo de uso para o usuário
-        opt = int(input())
-        print('\n')
+        # print(u'\nEscolha o número correspondente ao seu veículo (0 para retornar): ') ## Dar um exemplo de uso para o usuário
+        # opt = int(input())
+        # print('\n')
 
-        if opt == 0:
-            ok = self.escolheModelo()
-            if ok:
-                self.escolheModeloNaLista()            
-        elif opt in self.dicio.keys():
+        # if opt == 0:
+        #     ok = self.escolheModelo()
+        #     if ok:
+        #         self.escolheModeloNaLista() 
+        self.dicio = dicio
+        opt = int(opt)    
+        if opt in self.dicio.keys():
             modelo = self.dicio[opt]
 
             for nome in self.listaModelos:
@@ -132,31 +118,38 @@ class ConsultaFipe(object):
                     url = self.montaUrl.montar(arg="/veiculo/", idModelo=nome['id'])
             self.modelo = self.pegaDados(url)
         else:
-            print(u'\nOpção inválida!\n\
+            print(u'\nModelo Lista: Opção inválida!\n\
                 Por favor, tente novamente\n\n')
-            self.escolheModeloNaLista()
+            # self.escolheModeloNaLista()
 
-        self.dicio = {}
-        i = 1
-        for nome in self.modelo:
-            print(str(i) + " - " + nome['name'])
-            self.dicio[i] = nome
-            i+=1
+        return self.modelo
 
-        return True
+        # self.dicio = {}
+        # i = 1
+        # for nome in self.modelo:
+        #     print(str(i) + " - " + nome['name'])
+        #     self.dicio[i] = nome
+        #     i+=1
 
-    def escolheAno(self):
-        ok = False
+        # return True
 
-        print(u'\nEscolha qual o Ano/Combustível de seu veículo (0 para retornar): ')
-        opt = int(input())
-        print('\n')
+    def escolheAno(self, opt, dicio):
+        # ok = False
 
-        if opt == 0:
-            ok = self.escolheModelo()
-            if ok:
-                self.escolheModeloNaLista()
-        elif opt in self.dicio.keys():
+        # print(u'\nEscolha qual o Ano/Combustível de seu veículo (0 para retornar): ')
+        # opt = int(input())
+        # print('\n')
+
+        # if opt == 0:
+        #     ok = self.escolheModelo()
+        #     if ok:
+        #         self.escolheModeloNaLista()
+
+        self.dicio = dicio
+
+        opt = int(opt)
+
+        if opt in self.dicio.keys():
             veiculo = self.dicio[opt]
             url = self.montaUrl.montar(arg="/veiculo/", ano=veiculo['key'])
 
@@ -166,10 +159,11 @@ class ConsultaFipe(object):
             self.anoVeiculo = int(self.ano['ano_modelo'])
 
             print(u'Valor atual do veículo (' + self.nomeVeiculo + u'): ' + self.valorVeiculo)
+            return [self.valorVeiculo, self.anoVeiculo, self.nomeVeiculo]
         else:
-            print(u'\nOpção inválida!\n\
+            print(u'\nAno: Opção inválida!\n\
                 Por favor, tente novamente\n\n')
-            self.escolheAno()
+            # self.escolheAno()
         
     def pegaDados(self, link):
         response = requests.get(link)
