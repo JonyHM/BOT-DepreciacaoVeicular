@@ -15,7 +15,7 @@ from Sinonimos import Sinonimos
 from ConsultaFipe import ConsultaFipe
 from CalculaDepreciacao import CalculaDepreciacao
 
-TIPO, MARCA, MODELO, MODELO_LISTA, ANO, DEPRECIACAO, SAIR = range(7)
+TIPO, MARCA, MODELO, MODELO_LISTA, ANO, DEPRECIACAO, SAIR, PQ = range(8)
 
 class App(object):
 
@@ -42,7 +42,9 @@ class App(object):
       
       self.fipe.escolheTipo(query.data)
       
-      if query.data == 'moto':
+      if query.data == 'SAIR':
+         return SAIR
+      elif query.data == 'moto':
          bot.sendMessage(chat_id=chat_id, text=u'Certo, agora informe a marca da sua {}: '.format(query.data))
       else: 
          bot.sendMessage(chat_id=chat_id, text=u'Certo, agora informe a marca do seu {}: '.format(query.data))
@@ -51,12 +53,18 @@ class App(object):
 
    def escolheMarca(self, bot, update):
       marca = update.effective_message.text
+      query = update.callback_query
+      chat_id = query.message.chat.id
       
-      self.fipe.escolheMarca(marca)
+      resp = self.fipe.escolheMarca(marca)
       
-      update.message.reply_text(u'Informe o modelo do seu veículo: ')
+      if resp == True:
+         update.message.reply_text(u'Informe o modelo do seu veículo: ')
+         return MODELO
+      else:
+         bot.sendMessage(chat_id=chat_id, text=resp)
+         return MARCA
       
-      return MODELO
 
    def escolheModelo(self, bot, update):
       modelo = update.effective_message.text
@@ -96,6 +104,7 @@ class App(object):
 
       nomeValor = self.fipe.escolheAno(opt, self.dic)
       self.ano = nomeValor[1]
+      self.valor = nomeValor[0]
 
       update.message.reply_text(u'\nValor atual do veículo ({}): {}'.format(nomeValor[2], nomeValor[0]))
       
@@ -119,11 +128,14 @@ class App(object):
       if opcao == 'sair':
          return SAIR
       elif opcao == 'calcula':
+         print
          valorDepreciado = self.calc.calcular(self.ano, self.valor)
       else:
          print('Erro no input!')
 
-      bot.sendMessage(chat_id=chat_id, text=u'\nSeu veículo valerá, aproximadamente R${}'.format(valorDepreciado))
+      bot.sendMessage(chat_id=chat_id, text=valorDepreciado)
+      
+      return PQ
       
    def hello(self, bot, update):
       update.message.reply_text(u'Olá {}'.format(update.message.from_user.first_name))
@@ -134,7 +146,8 @@ class App(object):
          [
             InlineKeyboardButton('Carro', callback_data='carro'), 
             InlineKeyboardButton('Moto', callback_data='moto'), 
-            InlineKeyboardButton('Caminhão', callback_data='caminhao')
+            InlineKeyboardButton('Caminhão', callback_data='caminhao'),
+            InlineKeyboardButton('Sair', callback_data='SAIR')
          ]
       ]
 
@@ -150,6 +163,9 @@ class App(object):
       update.message.reply_text(u'Até mais! Volte sempre que precisar.')
       
       return ConversationHandler.END
+   
+   def porQue(self, bot, update):
+      
 
    def error(self, update, context):
       self.logger.warning(u'A atualização "%s" Causou o erro "%s"', update, context.error)
@@ -171,7 +187,9 @@ class App(object):
 
             DEPRECIACAO: [CallbackQueryHandler(self.calculaDepreciacao)],
 
-            SAIR: [RegexHandler('^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$', self.sair)]
+            SAIR: [CallbackQueryHandler(self.sair)],
+            
+            PQ: [CallbackQueryHandler(self.porQue)],
          },
 
          fallbacks=[CommandHandler('sair', self.sair)]
@@ -182,3 +200,9 @@ class App(object):
 
       self.atualizador.start_polling()
       self.atualizador.idle()
+
+
+# TODO: 
+# - Botões "Por que este valor?" e "continuar" no fim do valor na FIPE e depreciação contábil
+# - Tratamento de erro, chamando o próprio state de novo. (o consultaFipe vai retornar erro se 
+#der errado e se o retorno das funções for uma string, chamamos de novo o state)

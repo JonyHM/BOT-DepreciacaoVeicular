@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 import json, requests
-from Escolhas import Escolhas
 from MontaUrl import MontaUrl
 
 ## Modelo de fluxo para ser implementaqdo no Bot
@@ -11,7 +10,6 @@ from MontaUrl import MontaUrl
 class ConsultaFipe(object):    
     
     def __init__(self):
-        self.escolha = Escolhas()           
         self.montaUrl = MontaUrl()
         self.nomeVeiculo = ''
         self.valorVeiculo = ''
@@ -25,17 +23,8 @@ class ConsultaFipe(object):
         self.dicio = {}
         self.ano = []
         
-    def escolheTipo(self, opt):  
-       
-        if opt == 'invalido':
-            print(u'\nOpção inválida!\n\
-                Por favor, tente novamente\n')
-            self.escolheTipo(opt)
-        elif opt == 'SAIR':
-            print(u'\nSaindo...\n')
-            exit(0)
-        else:
-            self.opt = opt
+    def escolheTipo(self, opt):         
+        self.opt = opt
 
         # Fazendo a requisição GET na API da tabela FIPE e transformando em objeto python com a lib json
         url = self.montaUrl.montar(arg='/marcas', tipoVeiculo=self.opt)
@@ -47,11 +36,6 @@ class ConsultaFipe(object):
 
     def escolheMarca(self, marca):
 
-        # if marca.upper() == 'R':
-        #     ok = self.escolheTipo(self.opt)
-        #     if ok:
-        #         self.escolheMarca(marca)
-
         for nome in self.marcas:
             if marca.upper() == nome['name'].upper():
                 url = self.montaUrl.montar(arg='/veiculos/', idMarca=nome['id'])
@@ -62,9 +46,8 @@ class ConsultaFipe(object):
             try:
                 self.modelos = self.pegaDados(url)
             except: #retirar a mensagem e chamar o metodo denovo no bot
-                print(u'\nMarca não reconhecida!\n\
-                    Por favor, digite novamente\n\n')
-                # self.escolheMarca(marca)
+                return u'\nMarca não reconhecida!\n\
+                    Por favor, digite novamente\n\n'
 
         return True
 

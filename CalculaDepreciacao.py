@@ -1,6 +1,9 @@
 # encoding: utf-8
 
 from datetime import datetime
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 
 class CalculaDepreciacao(object):
 
@@ -9,28 +12,24 @@ class CalculaDepreciacao(object):
         self.valorVeiculo = ''
         self.anoAtual = datetime.now().year
         self.idadeCarro = 0
-        self.caracteres = ' R$.'
+        self.caracteres = 'R$ '
 
     def calcular(self, ano, valor):
         self.ano = ano
         self.valorVeiculo = valor
         self.idadeCarro = self.anoAtual - self.ano
 
-        self.valorVeiculo = self.valorVeiculo.split(',')
-        self.valorVeiculo = self.valorVeiculo[0]
-
-        for i in range(0, len(self.caracteres)):
-            self.valorVeiculo = self.valorVeiculo.replace(self.caracteres[i], '')
-
-        self.valorVeiculo = int(self.valorVeiculo)
-
-        if self.idadeCarro > 5:
-            print('Veiculo "usado"\n')
+        self.valorVeiculo = self.valorVeiculo.replace(self.caracteres, '')
+        self.valorVeiculo = locale.atof(self.valorVeiculo)
+        
+        if self.idadeCarro >= 5:
             self.valorVeiculo -= self.valorVeiculo * 0.1
-            print('\nSeu veículo valerá, aproximadamente R$' + str(self.valorVeiculo))
+            self.valorVeiculo = locale.currency(self.valorVeiculo, grouping=True,symbol=True)
+            return u'\nSeu veículo valerá, aproximadamente {}'.format(self.valorVeiculo)
                 ## Como seu veículo tem mais de 5 anos, o cálculo de depreciação realizado é 
                 # de -10% do valor atual anualmente
         else:
-            print('Seu veículo começará a depreciar efetivamente a partir de 5 anos de fabricação: ' + str(ano+5))
+            self.valorVeiculo = locale.currency(self.valorVeiculo, grouping=True,symbol=True)
+            return u'Seu veículo começará a depreciar efetivamente a partir de 5 anos de fabricação (em {}'.format(self.ano+5)
         
-        return self.valorVeiculo
+        # return self.valorVeiculo
