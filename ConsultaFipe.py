@@ -101,9 +101,8 @@ class ConsultaFipe(object):
                     url = self.montaUrl.montar(arg="/veiculo/", idModelo=nome['id'])
             self.modelo = self.pegaDados(url)
         else:
-            print(u'\nModelo Lista: Opção inválida!\n\
-                Por favor, tente novamente\n\n')
-            # self.escolheModeloNaLista()
+            return u'\nOpção inválida!\n\
+                Por favor, tente novamente\n\n'
 
         return self.modelo
 
@@ -144,15 +143,10 @@ class ConsultaFipe(object):
             print(u'Valor atual do veículo (' + self.nomeVeiculo + u'): ' + self.valorVeiculo)
             return [self.valorVeiculo, self.anoVeiculo, self.nomeVeiculo]
         else:
-            print(u'\nAno: Opção inválida!\n\
-                Por favor, tente novamente\n\n')
+            return u'\nOpção inválida!\n\
+                Por favor, tente novamente\n\n'
             # self.escolheAno()
         
     def pegaDados(self, link):
         response = requests.get(link)
         return json.loads(response.content)
-
-
-    # Problema atual: Print dos modelos estão nos metodos anteriores.
-    # Solução: Receber os dados locais necessários para a lógica do print e realizar estaq lógica
-    # nos metodos correspondentes
