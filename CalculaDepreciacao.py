@@ -30,7 +30,7 @@ class CalculaDepreciacao(object):
         if self.idadeCarro >= 5:
             self.valorVeiculo -= self.valorVeiculo * 0.1
             self.valorVeiculo = locale.currency(self.valorVeiculo, grouping=True,symbol=True)
-            return u'\nSeu veículo valerá, aproximadamente {}'.format(self.valorVeiculo)
+            return u'\nSeu veículo valerá, aproximadamente,\n{}'.format(self.valorVeiculo)
                 ## Como seu veículo tem mais de 5 anos, o cálculo de depreciação realizado é 
                 # de -10% do valor atual anualmente
         else:
