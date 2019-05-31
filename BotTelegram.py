@@ -53,23 +53,18 @@ class App(object):
 
    def escolheMarca(self, bot, update):
       marca = update.effective_message.text
-      query = update.callback_query
-      chat_id = query.message.chat.id
-      
       resp = self.fipe.escolheMarca(marca)
       
       if resp == True:
          update.message.reply_text(u'Informe o modelo do seu veículo: ')
          return MODELO
       else:
-         bot.sendMessage(chat_id=chat_id, text=resp)
+         update.message.reply_text(resp)
          return MARCA
       
 
    def escolheModelo(self, bot, update):
       modelo = update.effective_message.text
-      query = update.callback_query
-      chat_id = query.message.chat.id
       
       listaModelos = self.fipe.escolheModelo(modelo)
       if listaModelos:
@@ -81,7 +76,7 @@ class App(object):
       else:
          txt = u'Modelo não reconhecido!\n\
                Por favor, digite novamente.\n\n'
-         bot.sendMessage(chat_id=chat_id, text=txt)
+         update.message.reply_text(txt)
          update.message.reply_text(u'Informe o modelo do seu veículo: ')
          return MODELO
 
@@ -91,12 +86,10 @@ class App(object):
 
    def escolheModeloNaLista(self, bot, update):
       opt = update.effective_message.text
-      query = update.callback_query
-      chat_id = query.message.chat.id
       modelo = self.fipe.escolheModeloNaLista(opt, self.dic)
 
       if isinstance(modelo, str):
-         bot.sendMessage(chat_id=chat_id, text=modelo)
+         update.message.reply_text(modelo)
          update.message.reply_text(u'Informe o modelo do seu veículo: ')
          return MODELO 
       else:
@@ -112,12 +105,10 @@ class App(object):
 
    def escolheAno(self, bot, update):
       opt = update.effective_message.text
-      query = update.callback_query
-      chat_id = query.message.chat.id
       nomeValor = self.fipe.escolheAno(opt, self.dic)
       
       if isinstance(nomeValor, str):
-         bot.sendMessage(chat_id=chat_id, text=nomeValor)
+         update.message.reply_text(nomeValor)
          update.message.reply_text(u'Informe o modelo do seu veículo: ')
          return MODELO
       else:
@@ -145,11 +136,8 @@ class App(object):
 
       if opcao == 'sair':
          return SAIR
-      elif opcao == 'calcula':
-         print
-         valorDepreciado = self.calc.calcular(self.ano, self.valor)
       else:
-         print('Erro no input!')
+         valorDepreciado = self.calc.calcular(self.ano, self.valor)
 
       bot.sendMessage(chat_id=chat_id, text=valorDepreciado)
       
@@ -197,16 +185,11 @@ class App(object):
       ]
       marcacao = InlineKeyboardMarkup(teclado)
       
-      if opcao == 'calcula':
-         textoAposFipe = '' #Explicar como funciona a tabela Fipe e que valores são estes
-         bot.sendMessage(chat_id=chat_id, text=textoAposFipe)
-         return DEPRECIACAO
-      else:
-         textoAposDepreciacao = ''##Explicar o pq da depreciação
-         
-         bot.sendMessage(chat_id=chat_id, text=textoAposDepreciacao)
-         update.message.reply_text(u'Escolha um tipo de veículo:', reply_markup=marcacao)
-         return TIPO
+      textoAposDepreciacao = ''##Explicar o pq da depreciação - como funciona
+      bot.sendMessage(chat_id=chat_id, text=textoAposDepreciacao)
+      update.message.reply_text(u'Se deseja calcular outro veículo, escolha um tipo de veículo:', reply_markup=marcacao)
+      
+      return TIPO
          
 
    def error(self, update, context):
@@ -219,19 +202,25 @@ class App(object):
          states={
             TIPO: [CallbackQueryHandler(self.escolheTipo)],
 
-            MARCA: [RegexHandler('^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$', self.escolheMarca)],
+            MARCA: [RegexHandler('^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$', self.escolheMarca),
+                          CommandHandler(self.dicio.saudacao(), self.hello)],
 
-            MODELO: [RegexHandler('^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$', self.escolheModelo)],
+            MODELO: [RegexHandler('^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$', self.escolheModelo),
+                          CommandHandler(self.dicio.saudacao(), self.hello)],
 
-            MODELO_LISTA: [RegexHandler('^[\d]+$', self.escolheModeloNaLista)],
+            MODELO_LISTA: [RegexHandler('^[\d]+$', self.escolheModeloNaLista),
+                          CommandHandler(self.dicio.saudacao(), self.hello)],
 
-            ANO: [RegexHandler('^[\d]+$', self.escolheAno)],
+            ANO: [RegexHandler('^[\d]+$', self.escolheAno),
+                          CommandHandler(self.dicio.saudacao(), self.hello)],
 
-            DEPRECIACAO: [CallbackQueryHandler(self.calculaDepreciacao)],
+            DEPRECIACAO: [CallbackQueryHandler(self.calculaDepreciacao),
+                          CommandHandler(self.dicio.saudacao(), self.hello)],
 
             SAIR: [CallbackQueryHandler(self.sair)],
             
-            PQ: [CallbackQueryHandler(self.porQue)],
+            PQ: [CallbackQueryHandler(self.porQue),
+                          CommandHandler(self.dicio.saudacao(), self.hello)],
          },
 
          fallbacks=[CommandHandler('sair', self.sair)]
@@ -242,7 +231,6 @@ class App(object):
 
       self.atualizador.start_polling()
       self.atualizador.idle()
-
-
+      
 # TODO: 
-# - Botões "Por que este valor?" e "continuar" no fim do valor na FIPE e depreciação contábil
+# - Melhorar a tratativa de erros

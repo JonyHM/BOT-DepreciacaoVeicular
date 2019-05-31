@@ -17,7 +17,12 @@ class CalculaDepreciacao(object):
     def calcular(self, ano, valor):
         self.ano = ano
         self.valorVeiculo = valor
-        self.idadeCarro = self.anoAtual - self.ano
+        
+        if self.ano > self.anoAtual:
+            self.idadeCarro = 0
+            self.ano = self.anoAtual
+        else:
+            self.idadeCarro = self.anoAtual - self.ano
 
         self.valorVeiculo = self.valorVeiculo.replace(self.caracteres, '')
         self.valorVeiculo = locale.atof(self.valorVeiculo)
@@ -30,6 +35,6 @@ class CalculaDepreciacao(object):
                 # de -10% do valor atual anualmente
         else:
             self.valorVeiculo = locale.currency(self.valorVeiculo, grouping=True,symbol=True)
-            return u'Seu veículo começará a depreciar efetivamente a partir de 5 anos de fabricação (em {}'.format(self.ano+5)
+            return u'Seu veículo começará a depreciar efetivamente a partir de 5 anos de fabricação (em {})'.format(self.ano + 5)
         
         # return self.valorVeiculo

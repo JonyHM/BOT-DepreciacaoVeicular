@@ -4,4 +4,4 @@ Bot desenvolvido na disciplina de Interação Humano-Computador (IHC) da FATEC S
 ## Dependências
 instalar requests para ser utilizado no python
 
-`pip install requests`
+`python -m pip install requests python-telegram-bot`
