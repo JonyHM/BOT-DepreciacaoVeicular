@@ -4,7 +4,7 @@
 class Sinonimos(object):
 
    def saudacao(self):
-      return ['oi','ola','olá','fala ae','eae','dae', 'tudo bom']
+      return ['oi','ola','olá','fala ae','eae','dae', 'tudo bom', 'coé']
    
    def tipos(self):
       return ['carro', 'moto', 'caminhao']
