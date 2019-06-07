@@ -39,15 +39,17 @@ class App(object):
    def escolheTipo(self, bot, update):
       query = update.callback_query
       chat_id = query.message.chat.id
+
+      bot.sendMessage(chat_id=chat_id, text=u"Estou buscando dados, só um minuto...")
       
       self.fipe.escolheTipo(query.data)
       
       if query.data == 'sair':
          return SAIR
       elif query.data == 'moto':
-         bot.sendMessage(chat_id=chat_id, text=u'Certo, agora informe a marca da sua {}: '.format(query.data))
+         bot.sendMessage(chat_id=chat_id, text=u'Certo, agora informe a marca da sua {}'.format(query.data))
       else:
-         bot.sendMessage(chat_id=chat_id, text=u'Certo, agora informe a marca do seu {}: '.format(query.data))
+         bot.sendMessage(chat_id=chat_id, text=u'Certo, agora informe a marca do seu {}'.format(query.data))
          
       return MARCA
 
@@ -56,7 +58,7 @@ class App(object):
       resp = self.fipe.escolheMarca(marca)
       
       if resp == True:
-         update.message.reply_text(u'Informe o modelo do seu veículo: ')
+         update.message.reply_text(u'Informe o modelo do seu veículo')
          return MODELO
       else:
          update.message.reply_text(resp)
@@ -74,10 +76,9 @@ class App(object):
             self.dic[i] = nome['name']
             i+=1
       else:
-         txt = u'Modelo não reconhecido!\n\
-               Por favor, digite novamente.\n\n'
+         txt = u'Modelo não reconhecido!\nPor favor, digite novamente.\n\n'
          update.message.reply_text(txt)
-         update.message.reply_text(u'Informe o modelo do seu veículo: ')
+         update.message.reply_text(u'Informe o modelo do seu veículo')
          return MODELO
 
       update.message.reply_text(u'Escolha o número correspondente ao seu veículo')
@@ -96,11 +97,10 @@ class App(object):
          i = 1
          for nome in modelo:
             update.message.reply_text(str(i) + " - " + nome['name'])
-            print(nome['name'])
             self.dic[i] = nome
             i += 1
 
-      update.message.reply_text(u'Escolha o número correspondente ao Ano e Combustível de seu veículo: ')
+      update.message.reply_text(u'Escolha o número correspondente ao Ano e Combustível de seu veículo')
       
       return ANO
 
@@ -120,13 +120,12 @@ class App(object):
          
          teclado = [
             [
-               InlineKeyboardButton('Calcular depreciação', callback_data='calcula'), 
-               InlineKeyboardButton('Sair', callback_data='sair')
+               InlineKeyboardButton('Calcular depreciação', callback_data='calcula')
             ]
          ]
 
          marcacao = InlineKeyboardMarkup(teclado)
-         update.message.reply_text(u'O que quer fazer agora?', reply_markup=marcacao)
+         update.message.reply_text(u'O que quer fazer agora?\nDica: se quiser finalizar, digite /sair', reply_markup=marcacao)
          
          return DEPRECIACAO
 
@@ -157,8 +156,7 @@ class App(object):
          [
             InlineKeyboardButton('Carro', callback_data='carro'), 
             InlineKeyboardButton('Moto', callback_data='moto'), 
-            InlineKeyboardButton('Caminhão', callback_data='caminhao'),
-            InlineKeyboardButton('Sair', callback_data='sair')
+            InlineKeyboardButton('Caminhão', callback_data='caminhao')
          ]
       ]
 
@@ -168,6 +166,7 @@ class App(object):
       return TIPO
    
    def sair(self, bot, update):
+      print("UPDATE [", update, "]")
       user = update.message.from_user
       
       self.logger.info(u'Usuário %s finalizou a pesquisa.', user.first_name)
@@ -184,8 +183,7 @@ class App(object):
          [
             InlineKeyboardButton('Carro', callback_data='carro'), 
             InlineKeyboardButton('Moto', callback_data='moto'), 
-            InlineKeyboardButton('Caminhão', callback_data='caminhao'),
-            InlineKeyboardButton('Sair', callback_data='sair')
+            InlineKeyboardButton('Caminhão', callback_data='caminhao')
          ]
       ]
       marcacao = InlineKeyboardMarkup(teclado)

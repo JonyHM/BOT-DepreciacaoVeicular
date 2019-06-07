@@ -140,7 +140,6 @@ class ConsultaFipe(object):
             self.valorVeiculo = self.ano['preco']
             self.anoVeiculo = int(self.ano['ano_modelo'])
 
-            print(u'Valor atual do veículo (' + self.nomeVeiculo + u'): ' + self.valorVeiculo)
             return [self.valorVeiculo, self.anoVeiculo, self.nomeVeiculo]
         else:
             return u'\nOpção inválida!\n\
